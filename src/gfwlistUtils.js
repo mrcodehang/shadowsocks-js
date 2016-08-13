@@ -3,7 +3,7 @@ import { join } from 'path';
 import { request } from 'https';
 import { request as httpRequest } from 'http';
 import { parse } from 'url';
-import { writeFile, readFileSync } from 'fs';
+import { writeFile, readFileSync, readFile } from 'fs';
 import { minify } from 'uglify-js';
 
 export const GFWLIST_FILE_PATH = join(__dirname, '../pac/gfwlist.txt');
@@ -85,6 +85,7 @@ export function createListArrayString(text) {
 }
 
 export function createPACFileContent(text, { localAddr, localPort }) {
+
   const HOST = `${localAddr}:${localPort}`;
   const readFileOptions = { encoding: 'utf8' };
   const userRulesString = readFileSync(join(__dirname, '../pac/user.txt'), readFileOptions);
@@ -124,12 +125,14 @@ function minifyCode(code) {
   return minify(code, MINIFY_OPTIONS).code;
 }
 
-// TODO: async this
 export function getPACFileContent(_config) {
   const config = _config || DEFAULT_CONFIG;
-  const listText = readFileSync(GFWLIST_FILE_PATH, { encoding: 'utf8' });
-
-  return minifyCode(createPACFileContent(listText, config));
+  return new Promise((resolve) => {
+    readFile(GFWLIST_FILE_PATH, 'utf8', (err, data) => {
+      if (err) { throw new Error(err) }
+      resolve(minifyCode(createPACFileContent(data, config)))
+    })
+  });
 }
 
 function writeGFWList(listBuffer, next) {

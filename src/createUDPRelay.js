@@ -132,7 +132,7 @@ function _createUDPRelay(udpType, config, isServer, logger) {
   });
 
   socket.on('error', (err) => {
-    logger.error(`${NAME} socket err: ${err.message}`);
+    // logger.error(`${NAME} socket err: ${err.message}`);
     socket.close();
   });
 

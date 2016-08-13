@@ -260,6 +260,7 @@ function runDaemon(isServer, cmd) {
 }
 
 function runSingle(isServer, proxyOptions) {
+  console.log(ssLocal.startServer);
   const willLogToConsole = true;
   return isServer ? ssServer.startServer(proxyOptions, willLogToConsole)
     : ssLocal.startServer(proxyOptions, willLogToConsole);

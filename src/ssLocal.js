@@ -284,25 +284,26 @@ function closeAll() {
 function createServer(config) {
   const server = _createServer(handleConnection.bind(null, config));
   const udpRelay = createUDPRelay(config, false, logger);
-  const pacServer = createPACServer(config, logger);
 
-  server.on('close', () => {
-    logger.warn(`${NAME} server closed`);
+  return createPACServer(config, logger).then((pacServer) => {
+    server.on('close', () => {
+      logger.warn(`${NAME} server closed`);
+    });
+
+    server.on('error', e => {
+      logger.error(`${NAME} server error: ${e.message}`);
+    });
+
+    server.listen(config.localPort);
+
+    logger.verbose(`${NAME} is listening on ${config.localAddr}:${config.localPort}`);
+
+    return {
+      server, udpRelay,
+      pacServer,
+      closeAll,
+    };
   });
-
-  server.on('error', e => {
-    logger.error(`${NAME} server error: ${e.message}`);
-  });
-
-  server.listen(config.localPort);
-
-  logger.verbose(`${NAME} is listening on ${config.localAddr}:${config.localPort}`);
-
-  return {
-    server, udpRelay,
-    pacServer,
-    closeAll,
-  };
 }
 
 export function startServer(config, willLogToConsole = false) {

@@ -1,0 +1,1 @@
+new Promise(resolve => resolve()).then(() => 1).then((x) => console.log(x))

@@ -99,8 +99,8 @@ if (module === require.main) {
       process.exit(0);
     });
 
-    process.on('uncaughtException', err => {
-      logger.error(`${NAME} get error:\n${err.stack}`, createSafeAfterHandler(logger, () => {
+    process.on('uncaughtException', _err => {
+      logger.error(`${NAME} get error:\n${_err.stack}`, createSafeAfterHandler(logger, () => {
         process.exit(1);
       }));
     });
